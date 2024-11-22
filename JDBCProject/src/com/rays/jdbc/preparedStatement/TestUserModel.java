@@ -19,11 +19,18 @@ public class TestUserModel {
 
 	private static void testSearch() throws Exception {
 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 		UserModel model = new UserModel();
 
 		UserBean bean = new UserBean();
 
-		bean.setFirstName("Amit");
+		// bean.setFirstName("Amit");
+		// bean.setLastName("Pandey");
+		// bean.setLoginId("pooja@gmail.com");
+		// bean.setPassword("gita456");
+		bean.setDob(sdf.parse("1993-06-05"));
+		// bean.setAddress("indore");
 
 		List list = model.search(bean);
 

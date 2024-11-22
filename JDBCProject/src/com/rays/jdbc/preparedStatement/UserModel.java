@@ -1,21 +1,25 @@
 package com.rays.jdbc.preparedStatement;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.List;;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import com.rays.util.JDBCDataSource;;
 
 public class UserModel {
+
+	ResourceBundle rb = ResourceBundle.getBundle("com.rays.bundle.system");
 
 	public int nextPk() throws Exception {
 
 		int pk = 0;
 
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/rays", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 
 		PreparedStatement pstmt = conn.prepareStatement("select max(id) from user");
 
@@ -35,31 +39,40 @@ public class UserModel {
 
 	public void add(UserBean bean) throws Exception {
 
-		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection conn = null;
 
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/rays", "root", "root");
+		try {
 
-		PreparedStatement pstmt = conn.prepareStatement("insert into user values(?,?,?,?,?,?,?)");
+			conn = JDBCDataSource.getConnection();
 
-		pstmt.setInt(1, nextPk());
-		pstmt.setString(2, bean.getFirstName());
-		pstmt.setString(3, bean.getLastName());
-		pstmt.setString(4, bean.getLoginId());
-		pstmt.setString(5, bean.getPassword());
-		pstmt.setDate(6, new java.sql.Date(bean.getDob().getTime()));
-		pstmt.setString(7, bean.getAddress());
+			conn.setAutoCommit(false);
 
-		int i = pstmt.executeUpdate();
+			PreparedStatement pstmt = conn.prepareStatement("insert into user values(?,?,?,?,?,?,?)");
 
-		System.out.println("data added successfully = " + i);
+			pstmt.setInt(1, nextPk());
+			pstmt.setString(2, bean.getFirstName());
+			pstmt.setString(3, bean.getLastName());
+			pstmt.setString(4, bean.getLoginId());
+			pstmt.setString(5, bean.getPassword());
+			pstmt.setDate(6, new java.sql.Date(bean.getDob().getTime()));
+			pstmt.setString(7, bean.getAddress());
+
+			int i = pstmt.executeUpdate();
+
+			conn.commit();
+
+			System.out.println("data added successfully = " + i);
+
+		} catch (Exception e) {
+			conn.rollback();
+			// TODO: handle exception
+		}
 
 	}
 
 	public void delete(int id) throws Exception {
 
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/rays", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 
 		PreparedStatement pstmt = conn.prepareStatement("delete from user where id = ?");
 
@@ -73,9 +86,7 @@ public class UserModel {
 
 	public void update(UserBean bean) throws Exception {
 
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/rays", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 
 		PreparedStatement pstmt = conn.prepareStatement(
 				"update user set firstName = ?, lastName = ?, loginId = ?, password = ?, dob = ?, address = ? where id = ?");
@@ -178,6 +189,32 @@ public class UserModel {
 			if (bean.getLastName() != null && bean.getLastName().length() > 0) {
 
 				sql.append(" and lastName like '" + bean.getLastName() + "%'");
+
+			}
+
+			if (bean.getLoginId() != null && bean.getLoginId().length() > 0) {
+
+				sql.append(" and loginId like '" + bean.getLoginId() + "%'");
+
+			}
+
+			if (bean.getPassword() != null && bean.getPassword().length() > 0) {
+
+				sql.append(" and password like '" + bean.getPassword() + "%'");
+
+			}
+
+			if (bean.getDob() != null && bean.getDob().getTime() > 0) {
+
+				Date d = new Date(bean.getDob().getTime());
+
+				sql.append(" and dob like '" + d + "%'");
+
+			}
+
+			if (bean.getAddress() != null && bean.getAddress().length() > 0) {
+
+				sql.append(" and address like '" + bean.getAddress() + "%'");
 
 			}
 

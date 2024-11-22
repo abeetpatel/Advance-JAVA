@@ -1,6 +1,7 @@
 package abeet.patel.jdbc.preparedStatement;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class TestUserModel {
 	
@@ -10,7 +11,27 @@ public class TestUserModel {
 		//testUpdate();
 		//testDelete();
 		//testFinedById();
-		testAuthentication();
+		//testAuthentication();
+		testSearch();
+		
+	}
+
+	private static void testSearch() throws Exception {
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		UserBean been = new UserBean();
+		
+		UserModel model = new UserModel();
+		
+		//been.setFirstName("pooja");
+		//been.setLastName("gupta");
+		//been.setLoginId("gita@gamil.com");
+		//been.setPassword("rahul123");
+		//been.setDob(sdf.parse("2000-08-18"));
+		been.setAddress("indore");
+		
+		List list = model.search(been);
 		
 	}
 
